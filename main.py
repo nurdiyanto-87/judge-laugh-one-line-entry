@@ -40,21 +40,28 @@ applicant, and the punchline lands on the final word.
 
 import os
 
-LINE = (
-    "My Wi-Fi died during a job interview, so I finished it by carrier "
-    "pigeon \u2014 the pigeon got the job, and honestly, it had better "
-    "references."
-)
+# The entry, built from named parts so each beat is visible and editable.
+# Concatenated verbatim — the final line is unchanged.
+SETUP = "My Wi-Fi died during a job interview, so I finished it by carrier pigeon"
+TWIST = "the pigeon got the job"
+PUNCHLINE = "and honestly, it had better references."
+LINE = f"{SETUP} \u2014 {TWIST}, {PUNCHLINE}"
 
 
 def validate_line(line: str) -> str:
-    """Enforce the gate: 1-200 characters, not whitespace-only, valid UTF-8."""
+    """Enforce the gate: 1-200 characters, not whitespace-only, valid UTF-8.
+
+    Single-line gate: the brief demands exactly one line, so any embedded
+    newline or carriage return is a hard failure, not something to strip.
+    """
     if not isinstance(line, str):
         raise ValueError("entry must be a string")
     if not 1 <= len(line) <= 200:
         raise ValueError(f"entry must be 1-200 characters, got {len(line)}")
     if not line.strip():
         raise ValueError("entry must not be only whitespace")
+    if "\n" in line or "\r" in line:
+        raise ValueError("entry must be a single line")
     line.encode("utf-8")  # raises UnicodeEncodeError if not valid UTF-8
     return line
 
